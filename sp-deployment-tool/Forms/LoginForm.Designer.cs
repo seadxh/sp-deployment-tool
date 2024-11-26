@@ -182,7 +182,7 @@
             Controls.Add(server_name_input);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "LoginForm";
-            Text = "Connect to a Database";
+            Text = "Connect to a Server";
             ResumeLayout(false);
             PerformLayout();
         }

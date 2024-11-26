@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data;
 using Microsoft.Data.SqlClient;
 using sp_deployment_tool.Helpers;
 
@@ -30,8 +22,7 @@ namespace sp_deployment_tool {
             string connectionString = $"Server={serverName},{portNumber};Integrated Security=True;";
 
             try {
-                await Task.Run(() =>
-                {
+                await Task.Run(() => {
                     using (SqlConnection conn = new SqlConnection(connectionString)) {
                         conn.Open();
 
@@ -56,19 +47,20 @@ namespace sp_deployment_tool {
 
 
         private async void test_conn_button_Click(object sender, EventArgs e) {
-
-            //sql-1.use.aws.testing.corp.trackforce.com
-            //1433
             progress_bar.Visible = true;
             progress_bar.Style = ProgressBarStyle.Marquee;
 
             string serverName = server_name_input.Text;
             string portNumber = port_number_input.Text;
+
+            if(string.IsNullOrEmpty(portNumber) || string.IsNullOrWhiteSpace(portNumber)) {
+                portNumber = "1433";
+            }
+
             string connectionString = $"Server={serverName},{portNumber};Integrated Security=True;";
 
             try {
-                await Task.Run(() =>
-                {
+                await Task.Run(() => {
                     using (SqlConnection conn = new SqlConnection(connectionString)) {
                         conn.Open();
                         SqlCommand cmd = new SqlCommand("SELECT name FROM sys.databases;", conn);
@@ -79,10 +71,10 @@ namespace sp_deployment_tool {
                 });
 
                 progress_bar.Visible = false;
-                MessageBox.Show("Test successful.");
+                MessageBox.Show("Test successful.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } catch (Exception ex) {
                 progress_bar.Visible = false;
-                MessageBox.Show($"Failed to connect: {ex.Message}");
+                MessageBox.Show($"Failed to connect: {ex.Message}", "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 progress_bar.Visible = false;
             }

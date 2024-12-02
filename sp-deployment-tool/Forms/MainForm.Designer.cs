@@ -58,11 +58,11 @@
             // 
             // save_sp_button
             // 
-            save_sp_button.Location = new Point(1101, 694);
+            save_sp_button.Location = new Point(1062, 694);
             save_sp_button.Name = "save_sp_button";
-            save_sp_button.Size = new Size(75, 23);
+            save_sp_button.Size = new Size(114, 23);
             save_sp_button.TabIndex = 7;
-            save_sp_button.Text = "Deploy";
+            save_sp_button.Text = "Deploy (Ctrl + D)";
             save_sp_button.UseVisualStyleBackColor = true;
             save_sp_button.Click += save_sp_button_Click;
             // 
@@ -135,6 +135,7 @@
             remove_sp_button.TabIndex = 16;
             remove_sp_button.Text = "Remove";
             remove_sp_button.UseVisualStyleBackColor = true;
+            remove_sp_button.Click += remove_sp_button_Click;
             // 
             // beautify_button
             // 

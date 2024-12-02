@@ -28,13 +28,14 @@
             sp_content_input = new RichTextBox();
             save_sp_button = new Button();
             databases_checkbox_list = new CheckedListBox();
-            textBox1 = new TextBox();
+            sp_name_input = new TextBox();
             label2 = new Label();
             exit_button = new Button();
             label1 = new Label();
             schema_combo = new ComboBox();
             main_progress_bar = new ProgressBar();
             remove_sp_button = new Button();
+            beautify_button = new Button();
             SuspendLayout();
             // 
             // databases_label
@@ -50,6 +51,7 @@
             // 
             sp_content_input.Location = new Point(227, 56);
             sp_content_input.Name = "sp_content_input";
+            sp_content_input.ScrollBars = RichTextBoxScrollBars.Vertical;
             sp_content_input.Size = new Size(1111, 603);
             sp_content_input.TabIndex = 6;
             sp_content_input.Text = "";
@@ -73,13 +75,14 @@
             databases_checkbox_list.Size = new Size(209, 634);
             databases_checkbox_list.TabIndex = 8;
             databases_checkbox_list.ItemCheck += Databases_checkbox_list_ItemCheck;
+            databases_checkbox_list.MouseDown += Databases_checkbox_list_MouseDown;
             // 
-            // textBox1
+            // sp_name_input
             // 
-            textBox1.Location = new Point(536, 27);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(802, 23);
-            textBox1.TabIndex = 10;
+            sp_name_input.Location = new Point(536, 27);
+            sp_name_input.Name = "sp_name_input";
+            sp_name_input.Size = new Size(802, 23);
+            sp_name_input.TabIndex = 10;
             // 
             // label2
             // 
@@ -98,6 +101,7 @@
             exit_button.TabIndex = 12;
             exit_button.Text = "Exit";
             exit_button.UseVisualStyleBackColor = true;
+            exit_button.Click += exit_button_Click;
             // 
             // label1
             // 
@@ -132,18 +136,29 @@
             remove_sp_button.Text = "Remove";
             remove_sp_button.UseVisualStyleBackColor = true;
             // 
+            // beautify_button
+            // 
+            beautify_button.Location = new Point(227, 694);
+            beautify_button.Name = "beautify_button";
+            beautify_button.Size = new Size(121, 23);
+            beautify_button.TabIndex = 17;
+            beautify_button.Text = "Beautify (Ctrl + S)";
+            beautify_button.UseVisualStyleBackColor = true;
+            beautify_button.Click += beautify_button_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1350, 729);
+            Controls.Add(beautify_button);
             Controls.Add(remove_sp_button);
             Controls.Add(main_progress_bar);
             Controls.Add(schema_combo);
             Controls.Add(label1);
             Controls.Add(exit_button);
             Controls.Add(label2);
-            Controls.Add(textBox1);
+            Controls.Add(sp_name_input);
             Controls.Add(databases_checkbox_list);
             Controls.Add(save_sp_button);
             Controls.Add(sp_content_input);
@@ -160,12 +175,13 @@
         private RichTextBox sp_content_input;
         private Button save_sp_button;
         private CheckedListBox databases_checkbox_list;
-        private TextBox textBox1;
+        private TextBox sp_name_input;
         private Label label2;
         private Button exit_button;
         private Label label1;
         private ComboBox schema_combo;
         private ProgressBar main_progress_bar;
         private Button remove_sp_button;
+        private Button beautify_button;
     }
 }

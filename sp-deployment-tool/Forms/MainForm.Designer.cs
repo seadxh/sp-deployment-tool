@@ -36,6 +36,7 @@
             main_progress_bar = new ProgressBar();
             remove_sp_button = new Button();
             beautify_button = new Button();
+            load_button = new Button();
             SuspendLayout();
             // 
             // databases_label
@@ -81,17 +82,17 @@
             // 
             sp_name_input.Location = new Point(536, 27);
             sp_name_input.Name = "sp_name_input";
-            sp_name_input.Size = new Size(802, 23);
+            sp_name_input.Size = new Size(721, 23);
             sp_name_input.TabIndex = 10;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(458, 30);
+            label2.Location = new Point(446, 30);
             label2.Name = "label2";
-            label2.Size = new Size(72, 15);
+            label2.Size = new Size(84, 15);
             label2.TabIndex = 11;
-            label2.Text = "Proc. Name:";
+            label2.Text = "Release Name:";
             // 
             // exit_button
             // 
@@ -147,11 +148,22 @@
             beautify_button.UseVisualStyleBackColor = true;
             beautify_button.Click += beautify_button_Click;
             // 
+            // load_button
+            // 
+            load_button.Location = new Point(1263, 27);
+            load_button.Name = "load_button";
+            load_button.Size = new Size(75, 23);
+            load_button.TabIndex = 18;
+            load_button.Text = "Load";
+            load_button.UseVisualStyleBackColor = true;
+            load_button.Click += load_button_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1350, 729);
+            Controls.Add(load_button);
             Controls.Add(beautify_button);
             Controls.Add(remove_sp_button);
             Controls.Add(main_progress_bar);
@@ -184,5 +196,6 @@
         private ProgressBar main_progress_bar;
         private Button remove_sp_button;
         private Button beautify_button;
+        private Button load_button;
     }
 }

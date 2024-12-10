@@ -79,6 +79,7 @@ namespace sp_deployment_tool {
             var existingDatabases = new List<string>();
             var deployedDatabases = new List<string>();
             var failedDatabases = new List<string>();
+            string firstErrorMessage = null;
 
             foreach (var databaseName in selectedDatabases) {
                 try {
@@ -88,9 +89,9 @@ namespace sp_deployment_tool {
                         conn.Open();
 
                         string checkSpExistsQuery = $@"
-                SELECT COUNT(*) 
-                FROM sys.objects 
-                WHERE type = 'P' AND name = '{storedProcedureName}'";
+        SELECT COUNT(*) 
+        FROM sys.objects 
+        WHERE type = 'P' AND name = '{storedProcedureName}'";
                         using (SqlCommand checkCmd = new SqlCommand(checkSpExistsQuery, conn)) {
                             int spExists = (int)checkCmd.ExecuteScalar();
 
@@ -107,8 +108,11 @@ namespace sp_deployment_tool {
                         deployedDatabases.Add(databaseName);
                         main_progress_bar.Value++;
                     }
-                } catch (Exception) {
+                } catch (Exception ex) {
                     failedDatabases.Add(databaseName);
+                    if (firstErrorMessage == null) {
+                        firstErrorMessage = ex.Message;
+                    }
                 }
             }
 
@@ -138,8 +142,11 @@ namespace sp_deployment_tool {
 
                                 deployedDatabases.Add(databaseName);
                             }
-                        } catch (Exception) {
+                        } catch (Exception ex) {
                             failedDatabases.Add(databaseName);
+                            if (firstErrorMessage == null) {
+                                firstErrorMessage = ex.Message;
+                            }
                         }
                     }
                 }
@@ -151,6 +158,9 @@ namespace sp_deployment_tool {
             }
             if (failedDatabases.Any()) {
                 summary.Add($"Failed to deploy stored procedure to these databases:\n- {string.Join("\n- ", failedDatabases)}");
+                if (!string.IsNullOrWhiteSpace(firstErrorMessage)) {
+                    summary.Add($"\nError: {firstErrorMessage}");
+                }
             }
 
             if (summary.Any()) {
@@ -159,6 +169,7 @@ namespace sp_deployment_tool {
                 MessageBox.Show("No operations were performed.", "Deployment Summary", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
 
         private void LoadDatabases() {
             try {
@@ -321,6 +332,7 @@ namespace sp_deployment_tool {
                     "Removal Successful",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
+                sp_content_input.Text = string.Empty;
             } catch (Exception ex) {
                 main_progress_bar.Value = 0;
                 MessageBox.Show(
@@ -344,5 +356,59 @@ namespace sp_deployment_tool {
         private void exit_button_Click(object sender, EventArgs e) {
             this.FindForm().Close();
         }
+
+        private void load_button_Click(object sender, EventArgs e) {
+            string storedProcedureName = sp_name_input.Text.Trim();
+            if (string.IsNullOrWhiteSpace(storedProcedureName)) {
+                MessageBox.Show("Please enter a stored procedure name to load.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string selectedSchema = schema_combo.SelectedItem?.ToString();
+            if (string.IsNullOrWhiteSpace(selectedSchema)) {
+                MessageBox.Show("Please select a schema.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedDatabases = databases_checkbox_list.CheckedItems.Cast<string>().ToList();
+            if (!selectedDatabases.Any()) {
+                MessageBox.Show("Please select at least one database.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selectedDatabases.Count > 1) {
+                MessageBox.Show("You can only load one stored procedure from one database at a time. Please select only one database.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string serverName = Session.ServerName;
+            string portNumber = Session.PortNumber;
+
+            foreach (var databaseName in selectedDatabases) {
+                try {
+                    string connectionString = $"Server={serverName},{portNumber};Database={databaseName};Integrated Security=True;";
+                    using (SqlConnection conn = new SqlConnection(connectionString)) {
+                        conn.Open();
+
+                        string loadSpQuery = $@"
+                SELECT OBJECT_DEFINITION(OBJECT_ID('{selectedSchema}.{storedProcedureName}')) AS StoredProcedureDefinition";
+
+                        using (SqlCommand loadCmd = new SqlCommand(loadSpQuery, conn)) {
+                            object result = loadCmd.ExecuteScalar();
+
+                            if (result != null && !string.IsNullOrWhiteSpace(result.ToString())) {
+                                sp_content_input.Text = result.ToString();
+                                SqlKeywords.HighlightSQLSyntax(ref sp_content_input);
+                            } else {
+                                MessageBox.Show($"Stored procedure '{storedProcedureName}' not found in database '{databaseName}'.", "Load Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    MessageBox.Show($"Failed to load stored procedure from database '{databaseName}': {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
     }
 }
